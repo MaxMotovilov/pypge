@@ -21,6 +21,7 @@ parser.add_argument("--func_level", help="complexity of initial models", choices
 parser.add_argument("--init_level", help="complexity of initial models", choices=level_choices)
 parser.add_argument("--grow_level", help="complexity of model expansion", choices=level_choices)
 parser.add_argument("--target", help="target variable to regress")
+parser.add_argument("--remote", help="remote evaluator URI")
 # parser.add_argument("--iterations", help="number of iterations to run the search for")
 
 
@@ -49,6 +50,8 @@ if args.init_level is not None:
 	config["init_level"] = args.init_level
 if args.grow_level is not None:
 	config["grow_level"] = args.grow_level
+if args.remote is not None:
+	config["remote_host"] = args.remote
 
 
 # 2. read and setup data
