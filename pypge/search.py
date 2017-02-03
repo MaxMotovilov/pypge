@@ -505,7 +505,7 @@ class PGE:
 			# Multi expand and grow
 			curr = []
 			prev = []
-			popd = []
+#			popd = [] == ...Max... - unused
 			expanded = []
 			for i,_ in enumerate(self.multi_expanders):
 				nsga2_list = self.multi_expanders[i]['nsga2_list']
@@ -517,7 +517,7 @@ class PGE:
 
 				fromlen = len(nsga2_list)
 				curr, nsga2_list = self.heap_pop(nsga2_list, pop_count, self.fitness_calc)
-				popd.extend(curr)
+#				popd.extend(curr)  == ...Max... - unused
 				pfunc("heap " + str(i) + " popping", fromlen, numto=len(curr), lognames=["stdout","main"])
 
 				expand_tmp = self.expand_models(curr, grower)
