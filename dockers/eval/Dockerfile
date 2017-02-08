@@ -26,5 +26,7 @@ RUN cd /gocode/src/github.com/verdverm/pypge/evaluator && \
 	ls regress && \
 	/usr/local/go/bin/go install 
 
+EXPOSE 8080
+
 ENTRYPOINT ["/gocode/bin/evaluator"]
 

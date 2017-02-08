@@ -16,4 +16,3 @@ WORKDIR /pycode
 COPY requirements.txt /pycode/requirements.txt
 RUN pip3 install -r /pycode/requirements.txt
 
-VOLUME /pycode

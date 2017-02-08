@@ -1,11 +1,8 @@
-numpy
-pandas
-
-pypandoc
-
-scikit-learn
 networkx
+pyyaml
+websocket-client
 
 sympy
 lmfit
+scikit-learn
 
