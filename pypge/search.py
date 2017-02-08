@@ -510,7 +510,7 @@ class PGE:
 			for i,_ in enumerate(self.multi_expanders):
 				nsga2_list = self.multi_expanders[i]['nsga2_list']
 				pop_count = self.multi_expanders[i]['pop_count']
-				grower = self.multi_expanders[i]['grower']
+#				grower = self.multi_expanders[i]['grower']
 
 				if len(prev) > 0:
 					self.heap_push(nsga2_list, prev)
@@ -520,7 +520,7 @@ class PGE:
 #				popd.extend(curr)  == ...Max... - unused
 				pfunc("heap " + str(i) + " popping", fromlen, numto=len(curr), lognames=["stdout","main"])
 
-				expand_tmp = self.expand_models(curr, grower)
+				expand_tmp = self.expand_models(curr, i)
 				pfunc("popped => expanded", len(curr), numto=len(expand_tmp), lognames=["stdout","main"])
 				expanded.extend(expand_tmp)
 
@@ -822,12 +822,12 @@ class PGE:
 		unique = [m for m in models if m.memoized]
 		return unique
 
-	def expand_models(self, models, grower):
+	def expand_models(self, models, grower_id):
 		if self.workers > 0:
-			return self.expand_models_multiprocess(models, grower)
+			return self.expand_models_multiprocess(models, grower_id)
 		else:
 			# print ("  algebra:", len(models))
-			return self.grow_models(models, grower)
+			return self.grow_models(models, self.multi_expanders[grower_id]["grower"])
 
 	def grow_models(self, models, grower):
 		expanded = []
@@ -837,18 +837,17 @@ class PGE:
 		return expanded
 
 
-	def expand_models_multiprocess(self, models, grower):
+	def expand_models_multiprocess(self, models, grower_id):
 		# print ("  multi algebra:", len(models))
 		expanded = []
-		
+
 		for i,m in enumerate(models):
 			try:
-				self.expd_in_queue.put( (i,m, grower) )
+				self.expd_in_queue.put( (i,m, grower_id) )
 			except Exception as e:
 				print ("expd send error!", e, "\n  ", i, m.expr)
 				break
 
-		
 		for i in range(len(models)):
 			try:
 				ret = self.expd_out_queue.get()

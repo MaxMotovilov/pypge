@@ -141,10 +141,10 @@ def unwrap_self_expd_model_queue(PGE):
 				break;
 			pos = val[0]
 			modl = val[1]
-			grower = val[2]
-
+			grower = PGE.multi_expanders[val[2]]["grower"]
 
 			expdd = grower.grow(modl)
+
 			PGE.expd_out_queue.put( (pos, None, expdd) )
 		except Exception as e:
 			print("expd breaking!", e, "\n  ", pos, modl.expr)
