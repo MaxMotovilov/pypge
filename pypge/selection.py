@@ -289,6 +289,13 @@ def sortNDHelperA(fitnesses, obj, front):
     else:
         # More than two individuals, split list and then apply recursion
         best, worst = splitA(fitnesses, obj)
+
+        if len(best) == len(fitnesses) or len(worst) == len(fitnesses):
+            print( "Headed for infinite recursion!" )
+            for fit in fitnesses:
+                print( fit )
+            raise ValueError( "Bad input for NSGA-II" )
+
         sortNDHelperA(best, obj, front)
         sortNDHelperB(best, worst, obj-1, front)
         sortNDHelperA(worst, obj, front)
