@@ -1227,12 +1227,12 @@ class PGE:
 				print('.',end="",flush=True)
 				PPP += ppp
 
-
 			ret = self.ws.recv()
 
 			if ret is None:
 				print("WS RET NONE!!!")
 				continue
+
 			# print("WS RET:", ret,flush=True)
 
 			try:
@@ -1242,7 +1242,6 @@ class PGE:
 				print ("DECODE ERROR: ", e, ret)
 				continue
 
-
 			pos = dat['Pos']
 
 			try:
@@ -1251,6 +1250,13 @@ class PGE:
 				print ("POS ERROR: ", pos, len(models), e, dat)
 				continue
 
+			if "Error" in dat:
+				print( dat["Error"], dat["Result"], modl.expr, file=self.logs["evals"] )
+				infty = 1e20 # float("inf")
+				dat = {
+					"Coeff": [], "Nfev": 0, "Njac": 0, "Mae": infty, "Mse": infty, "Rmae": infty, "Rmse": infty,
+					"R2": -infty, "Adj_r2": -infty, "Evar": infty, "Aic": -infty, "Bic": -infty, "Chisqr": infty, "Redchi": infty
+				}
 
 			for i,v in enumerate(dat['Coeff']):
 				key = "C_{:d}".format(i)

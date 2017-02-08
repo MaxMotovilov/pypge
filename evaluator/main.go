@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	// "fmt"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -108,6 +108,13 @@ type EqnRet struct {
 	Redchi float64 `json:redchi`
 }
 
+type FailedEqnRet struct {
+	Pos    int    `json:pos`
+	Id     int    `json:id`
+	Error  string `json:error`
+	Result string `json:result`
+}
+
 func eval(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -144,6 +151,7 @@ func eval(w http.ResponseWriter, r *http.Request) {
 func responder(c *websocket.Conn, outgoing chan Ret) {
 
 	for {
+
 		r := <-outgoing
 
 		if r.Kind == "Break" {
@@ -151,6 +159,24 @@ func responder(c *websocket.Conn, outgoing chan Ret) {
 		}
 
 		rmsg, err := json.Marshal(r)
+
+		if err != nil {
+			log.Println(err)
+			log.Printf( "=> %+v\n", r )
+
+			var fr FailedEqnRet
+
+			p := r.Payload.(EqnRet)
+ 
+			fr.Pos = p.Pos
+			fr.Id = p.Id
+			fr.Error = err.Error()
+			fr.Result = fmt.Sprintf( "%+v", r )
+			r.Payload = fr
+
+			rmsg, err = json.Marshal(r)
+		}
+
 		// log.Println("SENDING: ", r)
 		err = c.WriteMessage(websocket.TextMessage, rmsg)
 		if err != nil {
@@ -278,7 +304,7 @@ func eqnProcessor(incoming chan EqnMsg, outgoing chan Ret, id int) {
 		ret.Kind = emsg.Kind
 		ret.Payload = eret
 
-		log.Println(id, eret.Pos, eret.Id)
+		// log.Println(id, eret.Pos, eret.Id)
 		// log.Println(id, eret.Pos, eret.Id, eret)
 
 		outgoing <- ret
